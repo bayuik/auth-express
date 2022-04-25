@@ -3,13 +3,17 @@ const app = express();
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
+const encrypt = require("mongoose-encryption");
+require("dotenv").config();
 
 mongoose.connect("mongodb://localhost:27017/userDB", { useNewURLParser: true });
 
-const userSchema = {
+const userSchema = new mongoose.Schema({
   email: String,
   password: String,
-};
+});
+
+userSchema.plugin(encrypt, { secret: process.env.SECRET, encryptedFields: ["password"] });
 
 const User = new mongoose.model("User", userSchema);
 
@@ -49,7 +53,7 @@ app
 
     newUser.save((err) => {
       if (err) res.send(err);
-      else res.render("secret");
+      else res.render("secrets");
     });
   });
 
